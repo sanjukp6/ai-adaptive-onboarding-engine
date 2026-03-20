@@ -124,7 +124,7 @@ export default function UploadZone({ label, description, onTextChange, onFileUpl
             placeholder={icon === 'resume'
               ? "Paste your resume text here, or drag & drop a file...\n\nSupported formats: TXT, PDF, DOCX\n\nExample:\nJohn Doe — Software Engineer\n5 years Python, 3 years React..."
               : "Paste the job description here, or drag & drop a file...\n\nSupported formats: TXT, PDF, DOCX\n\nExample:\nSenior Data Engineer\nRequirements: Python, Docker, AWS..."}
-            className="w-full h-48 bg-transparent text-sm text-text-secondary placeholder:text-text-muted/50 p-4 resize-none focus:outline-none rounded-xl"
+            className="w-full h-48 bg-transparent text-sm text-text-secondary placeholder:text-text-muted p-4 resize-none focus:outline-none rounded-xl"
             disabled={isLoading}
           />
 
