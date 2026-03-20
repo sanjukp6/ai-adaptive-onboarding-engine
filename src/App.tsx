@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles, ArrowRight, BarChart3, GitBranch, Brain, Clock,
   CheckCircle, AlertTriangle, Target, Layers, ChevronDown,
-  Rocket, Timer, Loader2, Cpu
+  Rocket, Timer, Loader2, Cpu, Globe
 } from 'lucide-react';
+import { analyzeCrossDomain, CrossDomainInsight } from './lib/domainDetector';
 import UploadZone from './components/UploadZone';
 import SkillGraph from './components/SkillGraph';
 import SkillRadarChart from './components/RadarChart';
@@ -266,6 +267,8 @@ export default function App() {
   const [selectedModule, setSelectedModule] = useState<LearningModule | null>(null);
   const [dashboardTab, setDashboardTab] = useState<'graph' | 'reasoning'>('graph');
   const [showReasoning, setShowReasoning] = useState(true);
+  const [crossDomainEnabled, setCrossDomainEnabled] = useState(true);
+  const [crossDomainInsight, setCrossDomainInsight] = useState<CrossDomainInsight | null>(null);
 
   // Gemini API state (key is read from .env VITE_GEMINI_API_KEY)
   const [isLoadingResume, setIsLoadingResume] = useState(false);
@@ -356,8 +359,16 @@ export default function App() {
     setTimeout(() => {
       const analysisResult = runFullAnalysis(rs!, jd!);
       setResult(analysisResult);
+
+      // Cross-domain analysis
+      if (crossDomainEnabled) {
+        const insight = analyzeCrossDomain(rs!, jd!);
+        setCrossDomainInsight(insight);
+      } else {
+        setCrossDomainInsight(null);
+      }
     }, 200);
-  }, [resumeText, jdText, resumeSkillsFromGemini, jdSkillsFromGemini]);
+  }, [resumeText, jdText, resumeSkillsFromGemini, jdSkillsFromGemini, crossDomainEnabled]);
 
   const handleProcessingComplete = useCallback(() => {
     setPage('dashboard');
@@ -438,7 +449,7 @@ export default function App() {
               </div>
 
               {/* Action Bar */}
-              <div className="flex justify-start">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <motion.button
                   onClick={() => handleAnalyze()}
                   disabled={!canAnalyze || isLoadingResume || isLoadingJD}
@@ -461,6 +472,22 @@ export default function App() {
                     </>
                   )}
                 </motion.button>
+
+                {/* Cross-Domain Toggle */}
+                <div className="flex items-center gap-3 glass rounded-lg px-4 py-2.5">
+                  <Globe className="w-4 h-4 text-purple-accent" />
+                  <span className="text-sm text-text-secondary font-medium">Cross-Domain Analysis</span>
+                  <button
+                    onClick={() => setCrossDomainEnabled(!crossDomainEnabled)}
+                    className={`relative w-11 h-6 rounded-full transition-colors duration-300 ${crossDomainEnabled ? 'bg-purple-accent' : 'bg-glass-border'}`}
+                  >
+                    <motion.div
+                      className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md"
+                      animate={{ x: crossDomainEnabled ? 20 : 0 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  </button>
+                </div>
               </div>
             </main>
           </motion.div>
@@ -496,6 +523,75 @@ export default function App() {
             </header>
 
             <div className="px-4 md:px-6 py-6 max-w-[1600px] mx-auto space-y-6">
+
+              {/* ===== CROSS-DOMAIN INSIGHT BANNER ===== */}
+              {crossDomainInsight && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`rounded-2xl p-5 border ${
+                    crossDomainInsight.isTransition
+                      ? 'bg-gradient-to-r from-purple-accent/10 to-electric-cyan/10 border-purple-accent/30'
+                      : 'bg-emerald/5 border-emerald/20'
+                  }`}
+                >
+                  <div className="flex items-start gap-4">
+                    <div className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center ${
+                      crossDomainInsight.isTransition ? 'bg-purple-accent/20' : 'bg-emerald/20'
+                    }`}>
+                      <Globe className={`w-5 h-5 ${crossDomainInsight.isTransition ? 'text-purple-accent' : 'text-emerald'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className="text-base font-bold font-[Syne] text-text-primary">
+                          {crossDomainInsight.isTransition ? 'Cross-Domain Transition Detected' : 'Within-Domain Upskill'}
+                        </h3>
+                        {crossDomainInsight.isTransition && (
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider ${
+                            crossDomainInsight.transitionDifficulty === 'high'
+                              ? 'bg-red-500/15 text-red-400 border border-red-500/30'
+                              : crossDomainInsight.transitionDifficulty === 'moderate'
+                              ? 'bg-amber/15 text-amber border border-amber/30'
+                              : 'bg-emerald/15 text-emerald border border-emerald/30'
+                          }`}>
+                            {crossDomainInsight.transitionDifficulty} difficulty
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-text-secondary mb-2">
+                        <span className="font-medium text-electric-cyan">{crossDomainInsight.resumeDomain.domain}</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-text-muted" />
+                        <span className="font-medium text-purple-accent">{crossDomainInsight.jdDomain.domain}</span>
+                      </div>
+                      <p className="text-sm text-text-secondary leading-relaxed">{crossDomainInsight.recommendation}</p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                        {crossDomainInsight.transferableSkills.length > 0 && (
+                          <div className="glass rounded-xl p-3">
+                            <p className="text-[11px] text-emerald font-semibold uppercase mb-2">Transferable Skills ({crossDomainInsight.transferableSkills.length})</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {crossDomainInsight.transferableSkills.map(s => (
+                                <span key={s} className="text-[11px] px-2 py-0.5 rounded-full bg-emerald/10 text-emerald border border-emerald/20">{s}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {crossDomainInsight.newDomainSkills.length > 0 && (
+                          <div className="glass rounded-xl p-3">
+                            <p className="text-[11px] text-red-accent font-semibold uppercase mb-2">New Skills Needed ({crossDomainInsight.newDomainSkills.length})</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {crossDomainInsight.newDomainSkills.map(s => (
+                                <span key={s} className="text-[11px] px-2 py-0.5 rounded-full bg-red-accent/10 text-red-accent border border-red-accent/20">{s}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {/* ===== SECTION A: Skill Match Overview ===== */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
