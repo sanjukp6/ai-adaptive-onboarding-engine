@@ -19,15 +19,7 @@
 
 🌐 **https://ai-adaptive-onboarding-engine-omega.vercel.app/**
 
-Try these demo personas instantly — no upload needed:
 
-| # | Persona | Transition | Gaps Found | Time Saved |
-|---|---------|-----------|-----------|-----------|
-| 🏥 | **Priya Sharma** ⭐ | Staff Nurse → Hospital Administrator | 6 critical | 1.8 weeks |
-| 💻 | **Arjun Kumar** | Software Engineer → DevOps Engineer | 5 critical | 2.4 weeks |
-| 📊 | **Rahul Mehta** | Marketing Executive → Product Manager | 4 critical | 1.6 weeks |
-
-> ⭐ **Start with Priya** — a nurse getting a completely different correct learning path proves true cross-domain scalability
 
 ---
 
