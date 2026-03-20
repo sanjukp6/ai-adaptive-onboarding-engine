@@ -96,7 +96,12 @@ export function runFullAnalysis(resumeSkills: ResumeSkill[], jdSkills: JDSkill[]
   const graph = buildSkillGraph();
   const learningPath = getOrderedLearningPath(gaps, candidateSkillsMap, graph);
 
-  const totalHours = learningPath.reduce((sum, m) => sum + m.course.duration_hours, 0);
+  const totalHours = learningPath.reduce((sum, m) => {
+    // Scale hours by gap ratio — don't count full course for partial gaps
+    const gapRatio = m.gap_data.gap / Math.max(m.gap_data.required_level, 0.1);
+    const effectiveRatio = m.is_prerequisite ? 0.5 : Math.min(gapRatio, 1);
+    return sum + Math.round(m.course.duration_hours * effectiveRatio);
+  }, 0);
   const skillsMatched = jdSkills.length - gaps.length;
 
   return {
