@@ -152,7 +152,7 @@ export default function SkillGraph({ result, onNodeClick }: SkillGraphProps) {
   }, [result.learning_path, onNodeClick]);
 
   return (
-    <div className="w-full h-full rounded-xl overflow-hidden bg-deep-space-lighter">
+    <div className="relative w-full h-full rounded-xl overflow-hidden bg-deep-space-lighter">
       <ReactFlow
         nodes={nodes}
         edges={edges}
