@@ -17,7 +17,7 @@
 
 ## 🔗 Live Demo
 
-🌐 **https://ai-adaptive-onboarding-engine-omega.vercel.app/**
+🌐 **https://ai-adaptive-onboarding-engine-n09l9egj5.vercel.app/**
 
 
 
@@ -296,7 +296,7 @@ cp .env.example .env
 
 The live demo is deployed on **Vercel** with automatic builds on every push to `main`.
 
-🔗 **Live URL:** https://ai-adaptive-onboarding-engine-omega.vercel.app/
+🔗 **Live URL:** https://ai-adaptive-onboarding-engine-n09l9egj5.vercel.app/
 
 The Docker production build uses **Nginx** to serve the Vite single-file output with proper SPA routing configured in `nginx.conf`.
 
@@ -325,6 +325,6 @@ MIT License — free to use, modify, and distribute.
 
 **SkillBridge — Resume in. Role-ready out. Zero guesswork.**
 
-🚀 [Live Demo](https://ai-adaptive-onboarding-engine-omega.vercel.app/) • 📧 [Contact Team](mailto:sanjukp2005@gmail.com) • Built for ARTPARK CodeForge Hackathon
+🚀 [Live Demo](https://ai-adaptive-onboarding-engine-n09l9egj5.vercel.app/) • 📧 [Contact Team](mailto:sanjukp2005@gmail.com) • Built for ARTPARK CodeForge Hackathon
 
 </div>
