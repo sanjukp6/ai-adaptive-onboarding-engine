@@ -11,13 +11,14 @@ export function generateReasoningTrace(
   prereqs: string[],
   dependents: string[]
 ): ReasoningTrace {
-  const currentPct = Math.round(gapData.current_level * 100);
-  const requiredPct = Math.round(gapData.required_level * 100);
   const importancePct = Math.round(gapData.importance * 100);
+
+  const urgency = gapData.importance > 0.85 ? "mandatory" : "preferred";
+  const severity = gapData.gap > 0.5 ? "completely missing from your profile" : "below the required level";
 
   return {
     skill,
-    why_needed: `Your current proficiency (${currentPct}%) is below the required level (${requiredPct}%) for this role. The gap of ${requiredPct - currentPct}% needs to be bridged through structured learning.`,
+    why_needed: `${skill} is ${severity} but is ${urgency} for this role. This course directly bridges that gap and unlocks ${dependents.length > 0 ? dependents.join(' and ') : 'your readiness'}.`,
     priority_reason: `This skill carries ${importancePct}% importance weight in the job description — ranked #${gapData.rank} in overall priority. Priority Score: ${gapData.priority_score.toFixed(2)} (gap × importance).`,
     prerequisites_added: prereqs.length > 0 ? prereqs : "None — you can start this directly",
     estimated_time: `${gapData.course.duration_hours} hours`,
